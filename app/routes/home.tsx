@@ -2,6 +2,8 @@ import type { Route } from "./+types/home";
 import Header from "~/components/Header";
 import Controls from "~/components/Controls";
 import PassageContainer from "~/components/PassageContainer";
+import passages from "../../data/data.json";
+import { useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,7 +12,12 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+type Difficulty = "easy" | "medium" | "hard";
 export default function Home() {
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<Difficulty>("easy");
+  const pool = passages[selectedDifficulty];
+  const randomPassage = pool[Math.floor(Math.random() * pool.length)].text;
   return (
     <div className="page-container min-h-screen">
       <div
@@ -21,11 +28,14 @@ export default function Home() {
   "
       >
         <Header />
-        <Controls />
+        <Controls
+          selectedDifficulty={selectedDifficulty}
+          onSelectDifficulty={setSelectedDifficulty}
+        />
       </div>
 
       <div className="mt-[var(--space-400)]">
-        <PassageContainer />
+        <PassageContainer passage={randomPassage} />
       </div>
     </div>
   );

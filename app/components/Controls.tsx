@@ -1,4 +1,15 @@
-export default function Controls() {
+export default function Controls({
+  onSelectDifficulty,
+  selectedDifficulty,
+}: {
+  onSelectDifficulty: (difficulty: "easy" | "medium" | "hard") => void;
+  selectedDifficulty: "easy" | "medium" | "hard";
+}) {
+  const difficulties: { label: string; value: "easy" | "medium" | "hard" }[] = [
+    { label: "Easy", value: "easy" },
+    { label: "Medium", value: "medium" },
+    { label: "Hard", value: "hard" },
+  ];
   return (
     <section className="flex flex-col gap-(--space-250) items-center justify-between">
       <div className="flex w-full md:justify-start justify-center">
@@ -20,10 +31,17 @@ export default function Controls() {
 
       <div className="md:flex flex-1 w-full items-center">
         <div className="flex space-x-(--space-150) md:hidden">
-          <select className="select-btn w-1/2">
-            <option>Easy</option>
-            <option>Medium</option>
-            <option>Hard</option>
+          <select
+            className="select-btn w-1/2"
+            onChange={(e) =>
+              onSelectDifficulty(e.target.value as "easy" | "medium" | "hard")
+            }
+          >
+            {difficulties.map((diff) => (
+              <option key={diff.value} value={diff.value}>
+                {diff.label}
+              </option>
+            ))}
           </select>
           <select className="select-btn w-1/2">
             <option>Timed(60s)</option>
@@ -35,9 +53,15 @@ export default function Controls() {
             Difficulty:
           </span>
           <div className="hidden md:flex text-preset-5  space-x-(--space-75)">
-            <button className="select-btn">Easy</button>
-            <button className="select-btn">Medium</button>
-            <button className="select-btn">Hard</button>
+            {difficulties.map((diff) => (
+              <button
+                key={diff.value}
+                className={`select-btn ${selectedDifficulty === diff.value ? "bg-blue-500" : ""}`}
+                onClick={() => onSelectDifficulty(diff.value)}
+              >
+                {diff.label}
+              </button>
+            ))}
           </div>
         </div>
         <div className="flex items-center gap-[var(--space-150)] ms-[var(--space-200)]">

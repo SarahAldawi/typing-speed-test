@@ -1,24 +1,56 @@
+import { useEffect, useRef, useState } from "react";
 import StartTyping from "./StartTyping";
 import { UndoIcon } from "public/images";
-export default function PassageContainer() {
+export default function PassageContainer({ passage }: { passage: string }) {
+  const [typed, setTyped] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const currentIndex = typed.length;
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   return (
     <section>
       <div className="relative w-full">
-        <div className="blur-md">
-          <p className="text-preset-1 text-neutral-400">
-            The archaeological expedition unearthed artifacts that complicated
-            prevailing theories about Bronze Age trade networks. Obsidian from
-            Anatolia, lapis lazuli from Afghanistan, and amber from the
-            Baltic—all discovered in a single Mycenaean tomb—suggested
-            commercial connections far more extensive than previously
-            hypothesized. "We've underestimated ancient peoples' navigational
-            capabilities and their appetite for luxury goods," the lead
-            researcher observed. "Globalization isn't as modern as we assume."
+        <div
+          className="hidden:blur-md"
+          onClick={() => inputRef.current?.focus()}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            id="passage"
+            className="absolute opacity-0 pointer-events-none"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+          />
+          <p className="text-preset-1 text-neutral-400 whitespace-pre-wrap">
+            {passage.split("").map((char, i) => {
+              const typedChar = typed[i];
+
+              let className = "text-neutral-400";
+
+              if (typedChar == char) {
+                className = "text-[var(--green-500)]";
+              } else if (typedChar != null && typedChar !== char) {
+                className = "text-[var(--red-500)] underline";
+              }
+              const isCurrent = i === currentIndex;
+
+              return (
+                <span key={i} className={className}>
+                  {char}
+                </span>
+              );
+            })}
           </p>
         </div>
-        <div className="absolute inset-0 z-50 flex justify-center items-center">
+
+        {/* <div className="absolute inset-0 z-50 flex justify-center items-center">
           <StartTyping />
-        </div>
+        </div> */}
       </div>
       <div className="flex justify-center items-center border-t border-[var(--neutral-700)] md:mt-[var(--space-800)] mt-[var(--space-400)]">
         <button className="flex gap-[var(--space-125)] bg-[var(--neutral-800)] rounded-[var(--radius-12)] px-[var(--space-200)] py-[var(--space-125)] mt-[var(--space-400)]">
