@@ -1,19 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import StartTyping from "./StartTyping";
 import { UndoIcon } from "public/images";
-export default function PassageContainer({ passage }: { passage: string }) {
+export default function PassageContainer({
+  passage,
+  started,
+  setStarted,
+  elapsedSeconds,
+}: {
+  passage: string;
+  started: boolean;
+  setStarted: (started: boolean) => void;
+  elapsedSeconds: number;
+}) {
   const [typed, setTyped] = useState("");
   const [mistakes, setMistakes] = useState<Set<number>>(new Set());
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const currentIndex = typed.length;
+  const wpm = elapsedSeconds
+    ? Math.round(typed.length / 5 / (elapsedSeconds / 60))
+    : 0;
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!started) setStarted(true);
+
     if (e.key === "Backspace") {
       e.preventDefault();
       setTyped((prev) => prev.slice(0, -1));
@@ -31,6 +45,9 @@ export default function PassageContainer({ passage }: { passage: string }) {
     }
 
     setTyped(value);
+    if (value.length === passage.length) {
+      setStarted(false);
+    }
   };
 
   const handleRestart = () => {
@@ -43,7 +60,7 @@ export default function PassageContainer({ passage }: { passage: string }) {
     <section>
       <div className="relative w-full">
         <div
-          className="hidden:blur-md"
+          className={`${!started ? "blur-sm" : ""}`}
           onClick={() => inputRef.current?.focus()}
         >
           <input
@@ -62,16 +79,11 @@ export default function PassageContainer({ passage }: { passage: string }) {
               const typedChar = typed[i];
               let className = "text-neutral-400";
 
-              // 🔴 currently wrong
               if (typedChar != null && typedChar !== char) {
                 className = "text-[var(--red-500)] underline";
-              }
-              // 🟡 was wrong before, now corrected
-              else if (typedChar === char && mistakes.has(i)) {
+              } else if (typedChar === char && mistakes.has(i)) {
                 className = "text-[var(--yellow-400)]";
-              }
-              // 🟢 correct on first try
-              else if (typedChar === char) {
+              } else if (typedChar === char) {
                 className = "text-[var(--green-500)]";
               }
 
@@ -84,9 +96,11 @@ export default function PassageContainer({ passage }: { passage: string }) {
           </p>
         </div>
 
-        {/* <div className="absolute inset-0 z-50 flex justify-center items-center">
-          <StartTyping />
-        </div> */}
+        {!started && (
+          <div className="flex justify-center items-center flex-col text-preset-3 text-semibold text-neutral-0">
+            <StartTyping onStart={() => setStarted(true)} />
+          </div>
+        )}
       </div>
       <div className="flex justify-center items-center border-t border-[var(--neutral-700)] md:mt-[var(--space-800)] mt-[var(--space-400)]">
         <button

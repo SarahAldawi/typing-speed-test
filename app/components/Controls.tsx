@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import Timer from "./Timer";
 export default function Controls({
   onSelectDifficulty,
   selectedDifficulty,
@@ -5,11 +7,14 @@ export default function Controls({
   onSelectDifficulty: (difficulty: "easy" | "medium" | "hard") => void;
   selectedDifficulty: "easy" | "medium" | "hard";
 }) {
+  const [mode, setMode] = useState<"timed" | "passage">("timed");
+  const [isRunning, setIsRunning] = useState(false);
   const difficulties: { label: string; value: "easy" | "medium" | "hard" }[] = [
     { label: "Easy", value: "easy" },
     { label: "Medium", value: "medium" },
     { label: "Hard", value: "hard" },
   ];
+
   return (
     <section className="flex flex-col gap-(--space-250) items-center justify-between">
       <div className="flex w-full md:justify-start justify-center">
@@ -25,7 +30,14 @@ export default function Controls({
 
         <div className="flex flex-col md:flex-row items-center gap-(--space-150) pl-(--space-300)">
           <span className="text-preset-3 text-(--neutral-400)">Time:</span>
-          <span className="text-preset-2">0:60</span>
+          <span className="text-preset-2">
+            <Timer
+              mode={mode === "timed" ? "down" : "up"}
+              startSeconds={60}
+              isRunning={isRunning}
+              onComplete={() => setIsRunning(false)}
+            />
+          </span>
         </div>
       </div>
 
@@ -69,8 +81,18 @@ export default function Controls({
             Mode:
           </span>
           <div className="hidden md:flex text-preset-5 space-x-(--space-75)">
-            <button className="select-btn">Timed(60s)</button>
-            <button className="select-btn">Passage</button>
+            <button
+              className={`select-btn ${mode === "timed" ? "selected" : ""}`}
+              onClick={() => setMode("timed")}
+            >
+              Timed(60s)
+            </button>
+            <button
+              className={`select-btn ${mode === "passage" ? "selected" : ""}`}
+              onClick={() => setMode("passage")}
+            >
+              Passage
+            </button>
           </div>
         </div>
       </div>

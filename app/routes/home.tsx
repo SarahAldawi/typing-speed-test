@@ -16,6 +16,7 @@ type Difficulty = "easy" | "medium" | "hard";
 export default function Home() {
   const [selectedDifficulty, setSelectedDifficulty] =
     useState<Difficulty>("easy");
+  const [started, setStarted] = useState(false);
   const pool = passages[selectedDifficulty];
   const randomPassage = pool[Math.floor(Math.random() * pool.length)].text;
   return (
@@ -35,7 +36,11 @@ export default function Home() {
       </div>
 
       <div className="mt-[var(--space-400)]">
-        <PassageContainer passage={randomPassage} />
+        <PassageContainer
+          passage={randomPassage}
+          started={started}
+          setStarted={setStarted}
+        />
       </div>
     </div>
   );
