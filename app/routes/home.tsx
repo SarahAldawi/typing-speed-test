@@ -40,6 +40,7 @@ export default function Home() {
           passage={randomPassage}
           started={started}
           setStarted={setStarted}
+          elapsedSeconds={0}
         />
       </div>
     </div>
